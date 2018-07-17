@@ -4,7 +4,9 @@ const session = require('express-session')
 require('dotenv').config();
 const checkForSession = require('../server/middlewares/checkForSession');
 const swagController = require('../server/controllers/swag_controller');
-const authController = require('../server/controllers/swag_controller');
+const authController = require('../server/controllers/auth_controller');
+const cartController = require('../server/controllers/cart_controller');
+const searchController = require('../server/controllers/search_controller');
 
 const port = process.env.SERVER_PORT;
 const app = express();
@@ -18,6 +20,7 @@ app.use(session({
 }))
 
 app.use( checkForSession );
+app.use( express.static( `${__dirname}/build` ) );
 
 app.listen(port, () => {
     console.log(`Listening on Port: ${port}`)
@@ -31,11 +34,8 @@ app.post('/api/signout', authController.signout);
 app.get('/api/user', authController.getUser);
 
 
+app.post('/api/cart', cartController.add);
+app.post('/api/cart/checkout', cartController.checkout);
+app.delete('/api/cart', cartController.delete);
 
-
-
-// Create the following endpoints: ( request method, url, controller method )
-// POST - /api/login - auth_controller.login.
-// POST - /api/register - auth_controller.register.
-// POST - /api/signout - auth_controller.signout.
-// GET - /api/user - auth_controller.getUser.
+app.get('./api/search', searchController.search);
